@@ -4,7 +4,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingCart, Heart, Search, ChevronRight, Star } from "lucide-react"
+import { ShoppingCart, Heart, Search, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
 import { useWishlist } from "@/context/wishlist-context"
@@ -128,10 +128,7 @@ export default function ProductCard({ product, onQuickView }) {
             {product.name}
           </h3>
 
-          {/* Stars */}
-          <div className="flex items-center text-[#F5B041] gap-0.5">
-            <Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current text-slate-200" />
-          </div>
+
 
           {/* Pricing details */}
           <div className="flex items-center pt-1">
