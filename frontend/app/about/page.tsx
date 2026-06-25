@@ -64,7 +64,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <span className="inline-block text-[10px] font-black tracking-widest uppercase text-[#93c572] mb-2">
+            <span className="inline-block text-[10px] font-black tracking-widest uppercase text-primary mb-2">
               Our Story
             </span>
             <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight drop-shadow-lg">
@@ -96,7 +96,7 @@ export default function AboutPage() {
             className="flex flex-col gap-6"
           >
             <div>
-              <span className="inline-block text-[10px] font-black tracking-widest uppercase text-[#93c572] mb-3">
+              <span className="inline-block text-[10px] font-black tracking-widest uppercase text-primary mb-3">
                 Who We Are
               </span>
               <h2 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight mb-4">
@@ -114,7 +114,7 @@ export default function AboutPage() {
             </p>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 mt-2 bg-[#93c572] hover:bg-[#7db35a] text-white font-black text-xs uppercase tracking-widest px-6 py-3 rounded-none transition-all w-fit shadow-sm hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 mt-2 bg-primary hover:bg-primary/90 text-white font-black text-xs uppercase tracking-widest px-6 py-3 rounded-none transition-all w-fit shadow-sm hover:-translate-y-0.5"
             >
               Shop The Collection →
             </Link>
@@ -150,7 +150,7 @@ export default function AboutPage() {
           className="mb-16"
         >
           <div className="text-center mb-10">
-            <span className="inline-block text-[10px] font-black tracking-widest uppercase text-[#93c572] mb-3">
+            <span className="inline-block text-[10px] font-black tracking-widest uppercase text-primary mb-3">
               Why Luxe Nest
             </span>
             <h2 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">
@@ -167,8 +167,8 @@ export default function AboutPage() {
                 transition={{ duration: 0.4, delay: 0.6 + index * 0.08 }}
                 className="bg-white rounded-2xl border border-slate-100 p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
               >
-                <span className="inline-block text-[#93c572] font-black text-lg mb-3">{feature.icon}</span>
-                <h3 className="font-black text-slate-800 text-base mb-2 group-hover:text-[#93c572] transition-colors">
+                <span className="inline-block text-primary font-black text-lg mb-3">{feature.icon}</span>
+                <h3 className="font-black text-slate-800 text-base mb-2 group-hover:text-primary transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
@@ -188,7 +188,7 @@ export default function AboutPage() {
             <Image src="/about-decor.png" alt="" fill className="object-cover" />
           </div>
           <div className="relative z-10">
-            <span className="inline-block text-[10px] font-black tracking-widest uppercase text-[#93c572] mb-3">
+            <span className="inline-block text-[10px] font-black tracking-widest uppercase text-primary mb-3">
               Start Today
             </span>
             <h3 className="text-2xl md:text-4xl font-black tracking-tight mb-4">
@@ -199,7 +199,7 @@ export default function AboutPage() {
             </p>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 bg-[#93c572] hover:bg-[#7db35a] text-white font-black text-xs uppercase tracking-widest px-8 py-4 rounded-none transition-all shadow-lg hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-black text-xs uppercase tracking-widest px-8 py-4 rounded-none transition-all shadow-lg hover:-translate-y-0.5"
             >
               Shop Now →
             </Link>

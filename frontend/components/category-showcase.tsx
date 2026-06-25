@@ -190,14 +190,16 @@ export default function CategoryShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.15 }}
-            className="relative flex items-center justify-between bg-[#F7F5F0] rounded-2xl overflow-hidden px-8 py-6 group hover:shadow-md transition-all"
+            className="relative flex items-center justify-between rounded-2xl overflow-hidden px-8 py-6 group hover:shadow-md transition-all"
+            style={{ background: "linear-gradient(135deg, #FAF6EE 0%, #F2E8D5 100%)", border: "1px solid rgba(191,150,48,0.15)" }}
           >
             <div className="z-10">
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary block mb-1">{deal.tag}</span>
-              <h3 className="text-xl font-black text-slate-800 leading-tight mb-3">{deal.name}</h3>
+              <span className="text-[10px] font-black uppercase tracking-widest block mb-1" style={{ color: "#BF9630" }}>{deal.tag}</span>
+              <h3 className="text-xl font-black leading-tight mb-3" style={{ color: "#4A3728" }}>{deal.name}</h3>
               <Button
                 asChild
-                className="bg-primary hover:bg-primary/90 text-white font-bold text-[11px] uppercase tracking-wider rounded-none px-5 h-9"
+                className="text-white font-bold text-[11px] uppercase tracking-wider rounded-none px-5 h-9"
+                style={{ background: "#BF9630" }}
               >
                 <Link href={`/shop/product/${deal.id}`}>Buy Now &gt;</Link>
               </Button>
@@ -210,14 +212,14 @@ export default function CategoryShowcase() {
       </div>
 
       {/* ─── Popular Categories Header ─── */}
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 border-b border-slate-100 pb-6 md:flex-row md:items-center">
+          <div className="mb-8 flex flex-col items-start justify-between gap-4 pb-6 md:flex-row md:items-center" style={{ borderBottom: "1px solid rgba(191,150,48,0.18)" }}>
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-800 leading-none">Popular Categories</h2>
-          <p className="mt-1.5 text-sm text-slate-500">Browse our premium household collection by category.</p>
+          <h2 className="text-3xl font-black tracking-tight leading-none" style={{ color: "#4A3728" }}>Popular Categories</h2>
+          <p className="mt-1.5 text-sm" style={{ color: "#7A6255" }}>Browse our premium household collection by category.</p>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap gap-1.5 bg-[#F7F5F0] p-1.5 rounded-full border border-slate-200/60 max-w-full overflow-x-auto">
+        <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full max-w-full overflow-x-auto" style={{ background: "#F5EDD9", border: "1px solid rgba(191,150,48,0.2)" }}>
           {CATEGORIES.map((tab) => {
             const isActive = activeTab === tab.value
             return (
@@ -238,7 +240,8 @@ export default function CategoryShowcase() {
 
         <Button
           asChild
-          className="rounded-none bg-slate-800 hover:bg-primary text-white font-bold text-xs uppercase tracking-wider h-10 px-6 flex items-center gap-1.5 transition-all shadow-sm shrink-0"
+          className="rounded-none text-white font-bold text-xs uppercase tracking-wider h-10 px-6 flex items-center gap-1.5 transition-all shadow-sm shrink-0 hover:opacity-90"
+          style={{ background: "#4A3728" }}
         >
           <Link href="/shop">
             <span>All Products</span>

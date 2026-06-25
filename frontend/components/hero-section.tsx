@@ -53,16 +53,24 @@ export default function HeroSection() {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="relative bg-[#FAFAF9] rounded-3xl min-h-[600px] flex flex-col lg:flex-row items-center justify-between p-8 sm:p-12 lg:p-16 overflow-hidden border border-slate-100 shadow-sm">
-
+      <div
+        className="relative rounded-3xl min-h-[600px] flex flex-col lg:flex-row items-center justify-between p-8 sm:p-12 lg:p-16 overflow-hidden border shadow-sm"
+        style={{
+          background: "linear-gradient(135deg, #FAF7F2 0%, #F5EDD9 60%, #EDE0C8 100%)",
+          borderColor: "rgba(191,150,48,0.15)"
+        }}
+      >
         {/* Decorative Background Elements */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white shadow-[0_0_80px_rgba(147,197,114,0.15)] z-0"
+          className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[600px] h-[600px] rounded-full z-0"
+          style={{ background: "radial-gradient(circle, rgba(191,150,48,0.08) 0%, transparent 70%)", boxShadow: "0 0 80px rgba(191,150,48,0.12)" }}
         />
-        {/* Subtle dot pattern could go here */}
+        {/* Botanical leaf dots decoration */}
+        <div className="absolute top-8 right-8 w-32 h-32 rounded-full opacity-20" style={{ background: "radial-gradient(circle, #8FAF7E 0%, transparent 70%)" }} />
+        <div className="absolute bottom-12 left-12 w-20 h-20 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #BF9630 0%, transparent 70%)" }} />
 
         {/* Left Content Column */}
         <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-start gap-8 pt-10 lg:pt-0">
@@ -70,27 +78,37 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-primary/10 text-primary px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-sm"
+            className="flex flex-col gap-4 items-start"
           >
-            New Arrival
+            <div className="swing-emoji drop-shadow-md">
+              <Image src="/logo.png" alt="Luxe Nest Households" width={280} height={140} className="h-24 w-auto md:h-32 object-contain" />
+            </div>
+            <div
+              className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-sm w-fit mt-2"
+              style={{ background: "rgba(191,150,48,0.12)", color: "#BF9630" }}
+            >
+              New Arrival
+            </div>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-800 tracking-tight leading-[1.1]"
+            className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1]"
+            style={{ color: "#4A3728" }}
           >
             Elevate <br />
             Your Home <br />
-            Aesthetics
+            <span style={{ color: "#BF9630" }}>Aesthetics</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-base sm:text-lg text-slate-500 max-w-md leading-relaxed"
+            className="text-base sm:text-lg max-w-md leading-relaxed"
+            style={{ color: "#7A6255" }}
           >
             A premium collection of household products designed for those who appreciate the perfect balance of form and function.
           </motion.p>
@@ -110,7 +128,8 @@ export default function HeroSection() {
             <Button
               variant="outline"
               asChild
-              className="bg-transparent border-slate-300 text-slate-600 hover:bg-white hover:text-slate-900 font-bold uppercase tracking-wider rounded-none px-8 h-12 hover:-translate-y-0.5 transition-all duration-300"
+              className="bg-transparent font-bold uppercase tracking-wider rounded-none px-8 h-12 hover:-translate-y-0.5 transition-all duration-300"
+              style={{ borderColor: "rgba(191,150,48,0.4)", color: "#BF9630" }}
             >
               <Link href={`/shop/product/${MAIN_DEAL.id}`}>View Details &gt;</Link>
             </Button>
@@ -139,13 +158,14 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8, type: "spring", stiffness: 100 }}
-            className="absolute top-10 right-10 lg:top-20 lg:right-[60%] bg-white p-4 rounded-xl shadow-xl border border-slate-100 flex flex-col items-center gap-1 z-20"
+            className="absolute top-10 right-10 lg:top-20 lg:right-[60%] bg-white p-4 rounded-xl shadow-xl flex flex-col items-center gap-1 z-20"
+            style={{ border: "1px solid rgba(191,150,48,0.2)" }}
           >
-            <span className="text-xs font-bold text-slate-800">{MAIN_DEAL.name}</span>
-            <div className="flex text-[#F5B041]">
+            <span className="text-xs font-bold" style={{ color: "#4A3728" }}>{MAIN_DEAL.name}</span>
+            <div className="flex" style={{ color: "#BF9630" }}>
               <Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current" /><Star className="h-3 w-3 fill-current text-slate-200" />
             </div>
-            <span className="text-xs font-black text-slate-600 mt-1">KES {MAIN_DEAL.price.toLocaleString()}</span>
+            <span className="text-xs font-black mt-1" style={{ color: "#7A6255" }}>KES {MAIN_DEAL.price.toLocaleString()}</span>
           </motion.div>
 
           {/* Floating Details Card */}
@@ -153,23 +173,24 @@ export default function HeroSection() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1, type: "spring" }}
-            className="hidden md:flex absolute bottom-16 right-[30%] bg-white/90 backdrop-blur-md p-5 rounded-xl shadow-2xl border border-slate-100 flex-col gap-4 z-20 w-48"
+            className="hidden md:flex absolute bottom-16 right-[30%] bg-white/90 backdrop-blur-md p-5 rounded-xl shadow-2xl flex-col gap-4 z-20 w-48"
+            style={{ border: "1px solid rgba(191,150,48,0.15)" }}
           >
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Price</p>
-              <p className="text-xl font-black text-slate-800">Ksh {MAIN_DEAL.price.toLocaleString()}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#BF9630" }}>Price</p>
+              <p className="text-xl font-black" style={{ color: "#4A3728" }}>Ksh {MAIN_DEAL.price.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Color</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#BF9630" }}>Color</p>
               <div className="flex gap-2">
                 <span className="w-3.5 h-3.5 rounded-full bg-slate-900 ring-1 ring-offset-2 ring-slate-900 cursor-pointer"></span>
                 <span className="w-3.5 h-3.5 rounded-full bg-slate-300 cursor-pointer"></span>
-                <span className="w-3.5 h-3.5 rounded-full bg-[#93c572] cursor-pointer"></span>
+                <span className="w-3.5 h-3.5 rounded-full cursor-pointer" style={{ background: "#BF9630" }}></span>
               </div>
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Category</p>
-              <p className="text-sm font-bold text-slate-700 uppercase">{MAIN_DEAL.category}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#BF9630" }}>Category</p>
+              <p className="text-sm font-bold uppercase" style={{ color: "#7A6255" }}>{MAIN_DEAL.category}</p>
             </div>
             <div className="relative mt-2 w-full h-16 rounded-lg overflow-hidden group cursor-pointer">
               <Image src="/featured/cutlery.png" alt="Video thumbnail" fill className="object-cover transition-transform group-hover:scale-110" />
@@ -203,7 +224,7 @@ export default function HeroSection() {
       </div>
 
       {/* Features Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 px-4 py-10 border-b border-slate-100">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 px-4 py-10 border-b" style={{ borderColor: "rgba(191,150,48,0.15)" }}>
         {[
           { num: 1000, suffix: "+", desc: "Orders delivered" },
           { num: 99, suffix: "%", desc: "Satisfaction rate" },
@@ -228,7 +249,7 @@ export default function HeroSection() {
                 feature.title
               )}
             </h4>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{feature.desc}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8FAF7E" }}>{feature.desc}</p>
           </motion.div>
         ))}
       </div>

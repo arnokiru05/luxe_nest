@@ -135,7 +135,7 @@ export default function Navbar() {
 
         {/* TIER 2: Main Header */}
         <header className="border-b border-slate-100">
-          <div className="mx-auto flex max-w-7xl items-center px-4 md:px-6 lg:px-8 h-16 md:h-20 gap-3 lg:gap-6">
+          <div className="mx-auto flex max-w-7xl items-center px-4 md:px-6 lg:px-8 h-24 md:h-36 gap-3 lg:gap-6">
 
             {/* Mobile hamburger */}
             <button
@@ -148,15 +148,7 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <Image src="/logo-luxenest.png" alt="Luxe Nest Logo" width={44} height={44} className="h-9 w-9 md:h-11 md:w-11 object-contain" />
-              <div className="flex flex-col">
-                <span className="text-xl md:text-2xl font-black tracking-tight leading-none transition-colors" style={{ color: "#93c572" }}>
-                  LUXE<span className="text-slate-900"> NEST</span>
-                </span>
-                <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-slate-400 leading-none uppercase mt-0.5">
-                  Premium Household Goods
-                </span>
-              </div>
+              <Image src="/logo.png" alt="Luxe Nest Households Logo" width={320} height={160} className="h-20 w-auto md:h-32 object-contain transform origin-left md:scale-110" priority />
             </Link>
 
             {/* Search Bar */}
@@ -304,12 +296,9 @@ export default function Navbar() {
               className="fixed left-0 top-0 bottom-0 w-[300px] bg-white z-50 flex flex-col shadow-2xl lg:hidden"
             >
               {/* Drawer header */}
-              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+              <div className="px-5 py-4 border-b border-amber-100/60 flex items-center justify-between bg-amber-50/40">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2.5">
-                  <Image src="/logo-luxenest.png" alt="Logo" width={34} height={34} className="h-8 w-8 object-contain" />
-                  <span className="text-sm font-black tracking-tight uppercase" style={{ color: "#93c572" }}>
-                    LUXE<span className="text-slate-900"> NEST</span>
-                  </span>
+                  <Image src="/logo.png" alt="Luxe Nest Logo" width={200} height={100} className="h-20 w-auto object-contain" />
                 </Link>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}

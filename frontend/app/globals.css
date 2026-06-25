@@ -4,75 +4,77 @@
 
 @layer base {
   :root {
-    --background: 60 14% 97%; /* #FAFAF9 Warm white */
-    --foreground: 215 16% 47%; /* Soft slate gray text */
+    /* ── Warm, earthy, woody palette inspired by Luxe Nest logo ── */
+    --background: 38 33% 97%;       /* #FAF7F2 Warm cream white */
+    --foreground: 24 30% 20%;       /* #4A3728 Deep warm brown text */
 
-    --card: 0 0% 100%; /* Pure white cards */
-    --card-foreground: 215 25% 27%; /* Darker gray for card text */
+    --card: 38 40% 98%;             /* #FDFAF5 Very light cream */
+    --card-foreground: 24 30% 20%;  /* Deep warm brown */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover: 38 40% 98%;
+    --popover-foreground: 24 30% 20%;
 
-    --primary: 101 40% 67%; /* Pistachio Green #93c572 */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
+    /* Primary: warm gold from the logo lettering */
+    --primary: 42 65% 45%;          /* #BF9630 Warm Gold */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 33% 96%; /* Very light warm gray/beige */
-    --secondary-foreground: 215 25% 27%;
+    /* Secondary: sage green from the botanical leaves */
+    --secondary: 115 20% 68%;       /* #8FAF7E Sage Green */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 60 14% 97%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 38 25% 94%;            /* #F3EDE3 Warm muted */
+    --muted-foreground: 24 15% 50%; /* Muted warm brown */
 
-    --accent: 101 40% 67%;
+    --accent: 24 45% 55%;           /* #C4825A Warm terracotta/copper */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 38 33% 97%;
 
-    --border: 60 10% 90%; /* Very light warm border */
-    --input: 60 10% 90%;
-    --ring: 101 40% 67%;
+    --border: 38 20% 88%;           /* Warm sandy border */
+    --input: 38 20% 88%;
+    --ring: 42 65% 45%;             /* Gold ring */
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 215 25% 27%;
-    --sidebar-primary: 101 40% 67%;
+    --sidebar-background: 38 40% 98%;
+    --sidebar-foreground: 24 30% 20%;
+    --sidebar-primary: 42 65% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 60 14% 97%;
-    --sidebar-accent-foreground: 215 25% 27%;
-    --sidebar-border: 60 10% 90%;
-    --sidebar-ring: 101 40% 67%;
+    --sidebar-accent: 38 25% 94%;
+    --sidebar-accent-foreground: 24 30% 20%;
+    --sidebar-border: 38 20% 88%;
+    --sidebar-ring: 42 65% 45%;
   }
 
   .dark {
-    /* Keeping dark mode but with a dark warm tone, just in case */
-    --background: 215 28% 17%;
-    --foreground: 60 14% 97%;
-    --card: 215 28% 17%;
-    --card-foreground: 60 14% 97%;
-    --popover: 215 28% 17%;
-    --popover-foreground: 60 14% 97%;
-    --primary: 101 40% 67%;
+    --background: 24 30% 12%;
+    --foreground: 38 33% 94%;
+    --card: 24 25% 16%;
+    --card-foreground: 38 33% 94%;
+    --popover: 24 25% 16%;
+    --popover-foreground: 38 33% 94%;
+    --primary: 42 65% 52%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 25% 27%;
-    --secondary-foreground: 60 14% 97%;
-    --muted: 215 25% 27%;
-    --muted-foreground: 215 16% 65%;
-    --accent: 101 40% 67%;
+    --secondary: 115 20% 55%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 24 20% 22%;
+    --muted-foreground: 38 15% 65%;
+    --accent: 24 40% 45%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 14% 97%;
-    --border: 215 25% 27%;
-    --input: 215 25% 27%;
-    --ring: 101 40% 67%;
-    --sidebar-background: 215 28% 17%;
-    --sidebar-foreground: 60 14% 97%;
-    --sidebar-primary: 101 40% 67%;
+    --destructive-foreground: 38 33% 94%;
+    --border: 24 20% 25%;
+    --input: 24 20% 25%;
+    --ring: 42 65% 52%;
+    --sidebar-background: 24 30% 12%;
+    --sidebar-foreground: 38 33% 94%;
+    --sidebar-primary: 42 65% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 27%;
-    --sidebar-accent-foreground: 60 14% 97%;
-    --sidebar-border: 215 25% 27%;
-    --sidebar-ring: 101 40% 67%;
+    --sidebar-accent: 24 20% 22%;
+    --sidebar-accent-foreground: 38 33% 94%;
+    --sidebar-border: 24 20% 25%;
+    --sidebar-ring: 42 65% 52%;
   }
 }
 
@@ -106,4 +108,34 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* ── Swinging home kaomoji animation ── */
+@keyframes swing {
+  0%, 100% { transform: rotate(-12deg); }
+  50%       { transform: rotate(12deg); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.swing-emoji {
+  display: inline-block;
+  animation: swing 2.4s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+/* ── Carousel scroll hide scrollbar ── */
+.carousel-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.carousel-scroll::-webkit-scrollbar {
+  display: none;
 }
