@@ -61,7 +61,7 @@ const PLACEHOLDER_PRODUCTS = [
   },
   {
     id: "ph-4",
-    name: "Minimalist Wall Clock",
+    name: "Premium Wall Clock",
     price: 4200,
     image: "/featured/blender.png",
     category: "Living Room",
@@ -620,7 +620,7 @@ function ShopPageContent() {
           Our Collection
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Premium minimalist household essentials, curated for modern living.
+          Premium household essentials, curated for modern living.
         </p>
         {apiFailed && (
           <p className="mt-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 inline-block">

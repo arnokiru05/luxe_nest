@@ -14,7 +14,7 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold">Luxe Nest</h3>
             <p className="mt-4 max-w-xs text-sm text-primary-foreground/80">
-              Your trusted source for premium, minimalist household essentials. We provide curated goods to elevate your living space.
+              Your trusted source for premium household essentials. We provide curated goods to elevate your living space.
             </p>
             <div className="mt-6 flex space-x-4">
               <a

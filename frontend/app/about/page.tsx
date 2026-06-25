@@ -15,7 +15,7 @@ const features = [
   {
     title: "Expert Curation",
     description:
-      "Our team of interior design enthusiasts hand-picks each item to ensure it fits seamlessly into a modern, minimalist home.",
+      "Our team of interior design enthusiasts hand-picks each item to ensure it fits seamlessly into a modern home.",
     icon: "✦",
   },
   {
@@ -104,7 +104,7 @@ export default function AboutPage() {
               </h2>
             </div>
             <p className="text-slate-500 leading-relaxed">
-              Luxe Nest is committed to curating premium, minimalist household essentials that transform
+              Luxe Nest is committed to curating premium household essentials that transform
               everyday living. We believe your home should be a reflection of refined taste and effortless comfort.
             </p>
             <p className="text-slate-500 leading-relaxed">
@@ -129,7 +129,7 @@ export default function AboutPage() {
           >
             <Image
               src="/about-decor.png"
-              alt="Luxe Nest — Minimalist Home Decor"
+              alt="Luxe Nest — Premium Home Decor"
               fill
               className="object-cover object-center"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -195,7 +195,7 @@ export default function AboutPage() {
               Ready to Elevate Your Home?
             </h3>
             <p className="text-slate-400 text-sm max-w-md mx-auto mb-8 leading-relaxed">
-              Browse our curated collection of premium minimalist household goods and transform your living space today.
+              Browse our curated collection of premium household goods and transform your living space today.
             </p>
             <Link
               href="/shop"

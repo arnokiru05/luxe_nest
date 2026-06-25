@@ -42,7 +42,7 @@ const PRODUCTS = [
     discount: "20%",
     image: "/featured/blender.png",
     category: "Appliances",
-    description: "Premium professional blender designed for ultimate performance and minimalist luxury in your kitchen.",
+    description: "Premium professional blender designed for ultimate performance and luxury in your kitchen.",
   },
   {
     id: "modern-lamp",
@@ -56,7 +56,7 @@ const PRODUCTS = [
   },
   {
     id: "cutlery-set",
-    name: "Minimalist Cutlery Set",
+    name: "Premium Cutlery Set",
     price: 8500,
     originalPrice: 9800,
     discount: "15%",

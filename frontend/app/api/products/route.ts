@@ -11,7 +11,7 @@ const MOCK_PRODUCTS = [
     discount: "20%",
     image: "/featured/blender.png",
     category: { id: "cat-appliances", name: "Appliances" },
-    description: "Premium professional blender designed for ultimate performance and minimalist luxury in your kitchen.",
+    description: "Premium professional blender designed for ultimate performance and luxury in your kitchen.",
     inStock: true,
     rating: 4.8,
     featured: true,
@@ -33,7 +33,7 @@ const MOCK_PRODUCTS = [
   },
   {
     id: "cutlery-set",
-    name: "Minimalist Cutlery Set",
+    name: "Premium Cutlery Set",
     price: 8500,
     originalPrice: 9800,
     discount: "15%",
@@ -153,7 +153,7 @@ const MOCK_PRODUCTS = [
   },
   {
     id: "wall-clock",
-    name: "Minimalist Wall Clock",
+    name: "Premium Wall Clock",
     price: 4200,
     image: "/featured/blender.png",
     category: { id: "cat-decor", name: "Decor" },

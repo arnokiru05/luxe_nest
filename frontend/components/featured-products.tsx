@@ -28,7 +28,7 @@ const FALLBACK_PRODUCTS = [
   },
   {
     id: "cutlery-set",
-    name: "Minimalist Cutlery Set",
+    name: "Premium Cutlery Set",
     price: 8500,
     image: "/featured/cutlery.png",
     category: "Cutlery",
@@ -80,7 +80,7 @@ export default function FeaturedProducts() {
             Featured Product
           </h2>
           <p className="mt-2 text-sm text-slate-500 max-w-md">
-            Hand-picked premium household essentials for modern, minimalist living.
+            Hand-picked premium household essentials for modern living.
           </p>
         </div>
         <Button
