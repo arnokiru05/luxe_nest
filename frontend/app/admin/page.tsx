@@ -1,19 +1,65 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isAuthenticatedServer } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import { DashboardClient } from "./components/dashboard-client";
 
 async function getDashboardData() {
-  const cookieStore = await cookies();
-  const secret = cookieStore.get("admin_secret")?.value;
+  const [
+    totalProducts,
+    activeProducts,
+    totalOrders,
+    pendingOrders,
+    revenueResult,
+    ordersByStatus,
+    productsByCategory,
+    recentOrders,
+  ] = await Promise.all([
+    prisma.product.count(),
+    prisma.product.count({ where: { isActive: true } }),
+    prisma.order.count(),
+    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.aggregate({ _sum: { total: true }, where: { paymentStatus: "PAID" } }),
+    prisma.order.groupBy({ by: ["status"], _count: { id: true } }),
+    prisma.product.groupBy({
+      by: ["categoryId"],
+      _count: { id: true },
+    }),
+    prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 7,
+      select: {
+        id: true,
+        createdAt: true,
+        total: true,
+        status: true,
+        customerName: true,
+      },
+    }),
+  ]);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/dashboard`, {
-    headers: { "x-admin-secret": secret || "" },
-    cache: "no-store",
+  const categoryIds = productsByCategory.map((p) => p.categoryId);
+  const categories = await prisma.category.findMany({
+    where: { id: { in: categoryIds } },
+    select: { id: true, name: true },
   });
+  const catMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
-  if (!res.ok) return null;
-  return res.json();
+  return {
+    totalProducts,
+    activeProducts,
+    totalOrders,
+    pendingOrders,
+    totalRevenue: Number(revenueResult._sum.total ?? 0),
+    ordersByStatus: ordersByStatus.map((o) => ({ status: o.status, count: o._count.id })),
+    productsByCategory: productsByCategory.map((p) => ({
+      category: catMap[p.categoryId] ?? "Uncategorised",
+      count: p._count.id,
+    })),
+    recentOrders: recentOrders.map((o) => ({
+      ...o,
+      total: Number(o.total),
+    })),
+  };
 }
 
 export default async function AdminPage() {

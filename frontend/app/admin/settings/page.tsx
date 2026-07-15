@@ -1,17 +1,28 @@
 import { redirect } from "next/navigation";
 import { isAuthenticatedServer } from "@/lib/auth";
-import { cookies } from "next/headers";
+import prisma from "@/lib/prisma";
 import { SettingsClient } from "./settings-client";
 
 async function getSettings() {
-  const cookieStore = await cookies();
-  const secret = cookieStore.get("admin_secret")?.value;
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/settings`, {
-    headers: { "x-admin-secret": secret || "" },
-    cache: "no-store",
-  });
-  if (!res.ok) return null;
-  return res.json();
+  let settings = await prisma.storeSettings.findUnique({ where: { id: "singleton" } });
+  if (!settings) {
+    settings = await prisma.storeSettings.create({
+      data: {
+        id: "singleton",
+        storeName: "Luxe Nest Household",
+        paymentMethods: ["MPESA"],
+        paymentNotes: "",
+        mpesaTillNumber: "",
+        whatsappNumber: "254769567516",
+        shippingZones: [
+          { name: "Eldoret", rate: 200 },
+          { name: "Upcountry", rate: 500 },
+        ],
+        freeShippingOver: null,
+      },
+    });
+  }
+  return settings;
 }
 
 export default async function SettingsPage() {
