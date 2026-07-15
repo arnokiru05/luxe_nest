@@ -1,19 +1,14 @@
 // @ts-nocheck
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
-import { verifyAuth } from "@/lib/auth"
+import { isAuthenticated } from "@/lib/auth"
 // No dummy data import
 // GET /api/admin/products - Get all products
 export async function GET(request) {
   try {
     // Verify admin authentication
-    const { user, error, newToken, tokenRefreshed } = await verifyAuth(request)
-    
-    if (error || user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized access" },
-        { status: 401 }
-      )
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
     // Get query parameters
@@ -76,19 +71,6 @@ export async function GET(request) {
       },
     })
     
-    // If token was refreshed, set the new token in a cookie
-    if (tokenRefreshed && newToken) {
-      response.cookies.set({
-        name: 'token',
-        value: newToken,
-        httpOnly: true,
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-      })
-    }
-    
     return response
   } catch (error) {
     console.error("Error fetching products:", error)
@@ -103,13 +85,8 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     // Verify admin authentication
-    const { user, error, newToken, tokenRefreshed } = await verifyAuth(request)
-    
-    if (error || user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized access" },
-        { status: 401 }
-      )
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
     // Parse request body
@@ -189,19 +166,6 @@ export async function POST(request) {
     })
 
     const response = NextResponse.json({ product }, { status: 201 })
-    
-    // If token was refreshed, set the new token in a cookie
-    if (tokenRefreshed && newToken) {
-      response.cookies.set({
-        name: 'token',
-        value: newToken,
-        httpOnly: true,
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-      })
-    }
     
     return response
   } catch (error) {

@@ -1,19 +1,14 @@
 // @ts-nocheck
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
-import { verifyAuth } from "@/lib/auth"
+import { isAuthenticated } from "@/lib/auth"
 
 // GET /api/admin/products/:id - Get a specific product
 export async function GET(request, { params }) {
   try {
     // Verify admin authentication
-    const { user, error, newToken, tokenRefreshed } = await verifyAuth(request)
-    
-    if (error || user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized access" },
-        { status: 401 }
-      )
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
     const resolvedParams = await params
@@ -36,19 +31,6 @@ export async function GET(request, { params }) {
 
     const response = NextResponse.json({ product })
     
-    // If token was refreshed, set the new token in a cookie
-    if (tokenRefreshed && newToken) {
-      response.cookies.set({
-        name: 'token',
-        value: newToken,
-        httpOnly: true,
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-      })
-    }
-    
     return response
   } catch (error) {
     console.error("Error fetching product:", error)
@@ -63,13 +45,8 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     // Verify admin authentication
-    const { user, error, newToken, tokenRefreshed } = await verifyAuth(request)
-    
-    if (error || user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized access" },
-        { status: 401 }
-      )
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
     const resolvedParams = await params
@@ -127,19 +104,6 @@ export async function PUT(request, { params }) {
 
     const response = NextResponse.json({ product: updatedProduct })
     
-    // If token was refreshed, set the new token in a cookie
-    if (tokenRefreshed && newToken) {
-      response.cookies.set({
-        name: 'token',
-        value: newToken,
-        httpOnly: true,
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-      })
-    }
-    
     return response
   } catch (error) {
     console.error("Error updating product:", error)
@@ -154,13 +118,8 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     // Verify admin authentication
-    const { user, error, newToken, tokenRefreshed } = await verifyAuth(request)
-    
-    if (error || user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized access" },
-        { status: 401 }
-      )
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
     const resolvedParams = await params
@@ -172,19 +131,6 @@ export async function DELETE(request, { params }) {
     })
 
     const response = NextResponse.json({ success: true })
-    
-    // If token was refreshed, set the new token in a cookie
-    if (tokenRefreshed && newToken) {
-      response.cookies.set({
-        name: 'token',
-        value: newToken,
-        httpOnly: true,
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-      })
-    }
     
     return response
   } catch (error) {

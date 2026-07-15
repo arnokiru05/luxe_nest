@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
-import { verifyAuth } from "@/lib/auth"
+import { isAuthenticated } from "@/lib/auth"
 import bcrypt from "bcryptjs"
 
 // PUT /api/admin/users/:id - Update a user
