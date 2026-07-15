@@ -41,6 +41,7 @@ export default function CheckoutPage() {
   const [orderInfo, setOrderInfo] = useState(null)
   const [waLink, setWaLink] = useState("")
   const [settings, setSettings] = useState<any>(null)
+  const [selectedZone, setSelectedZone] = useState<{ name: string; rate: number } | null>(null)
 
   useEffect(() => {
     fetch("/api/settings")
@@ -65,7 +66,10 @@ export default function CheckoutPage() {
   }
 
   const subtotal = getCartTotal()
-  const deliveryFee = 0 // Free delivery for orders in Kenya currently
+  const shippingZones: { name: string; rate: number }[] = settings?.shippingZones || []
+  const freeShippingOver = settings?.freeShippingOver ? Number(settings.freeShippingOver) : null
+  const isFreeShipping = freeShippingOver !== null && subtotal >= freeShippingOver
+  const deliveryFee = isFreeShipping ? 0 : (selectedZone?.rate ?? 0)
   const total = subtotal + deliveryFee
 
   const handleSubmit = async (e) => {
@@ -103,6 +107,8 @@ export default function CheckoutPage() {
           email: formData.email.trim(),
           phone: formData.phone.trim(),
           address: formData.address.trim(),
+          deliveryFee,
+          shippingZone: selectedZone?.name || null,
           items: cartItems.map(item => ({
             id: item.id,
             name: item.name,
@@ -130,12 +136,12 @@ export default function CheckoutPage() {
       })
 
       // 2. Generate WhatsApp redirect message
-      const shortOrderId = data.order.id.slice(-8).toUpperCase()
+      const orderIdDisplay = data.order.id.toUpperCase()
       
       const whatsappMessage = `Hi Luxe Nest! 🛋️\n\n` +
         `I have just placed an order as a guest client:\n` +
         `━━━━━━━━━━━━━━━━━━━\n` +
-        `*Order ID:* #${shortOrderId}\n` +
+        `*Order ID:* #${orderIdDisplay}\n` +
         `*Customer Name:* ${formData.name.trim()}\n` +
         `*Phone:* ${formData.phone.trim()}\n` +
         `*Delivery Address:* ${formData.address.trim()}\n` +
@@ -144,6 +150,7 @@ export default function CheckoutPage() {
         cartItems.map(item => `• ${item.name} [x${item.quantity}] - Ksh ${(item.price * item.quantity).toLocaleString()}`).join("\n") +
         `\n\n` +
         `*Total Amount:* Ksh ${total.toLocaleString()}\n` +
+        (selectedZone ? `*Delivery Zone:* ${selectedZone.name} (Ksh ${deliveryFee.toLocaleString()})\n` : "") +
         `*Payment Method:* M-Pesa Buy Goods Till\n\n` +
         `Please confirm my delivery details. Thank you! 🙏`
 
@@ -183,8 +190,8 @@ export default function CheckoutPage() {
             <CheckCircle className="h-8 w-8 animate-bounce" />
           </div>
           
-          <h2 className="text-2xl font-black tracking-tight text-slate-900 mb-2">
-            ORDER #{(orderInfo.id || "").slice(-8).toUpperCase()} CREATED!
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase leading-none">
+            ORDER #{(orderInfo.id || "").toUpperCase()} CREATED!
           </h2>
           <p className="text-slate-500 text-sm mb-6 leading-relaxed">
             Your guest order has been persisted successfully in our database. We are now redirecting you to WhatsApp to finalize your delivery.
@@ -341,6 +348,35 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* Shipping Zone Selector */}
+                {shippingZones.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-slate-600 font-semibold text-xs tracking-wider uppercase">Delivery Zone</Label>
+                    {isFreeShipping ? (
+                      <div className="flex items-center gap-2 h-12 px-4 bg-emerald-50 border border-emerald-200 rounded-full text-sm text-emerald-700 font-semibold">
+                        🎉 Free shipping on orders above Ksh {freeShippingOver?.toLocaleString()}!
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        {shippingZones.map(zone => (
+                          <button
+                            key={zone.name}
+                            type="button"
+                            onClick={() => setSelectedZone(selectedZone?.name === zone.name ? null : zone)}
+                            className={`h-12 px-4 rounded-full border text-sm font-semibold transition-all ${
+                              selectedZone?.name === zone.name
+                                ? "bg-slate-900 text-white border-slate-900"
+                                : "bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-400"
+                            }`}
+                          >
+                            {zone.name} — Ksh {zone.rate.toLocaleString()}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="pt-4">
                   <Button
                     type="submit"
@@ -432,10 +468,20 @@ export default function CheckoutPage() {
                   <span>Cart Subtotal:</span>
                   <span className="font-semibold text-slate-900">Ksh {subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>Delivery Charge:</span>
-                  <span className="font-semibold text-emerald-600">FREE</span>
-                </div>
+                {shippingZones.length > 0 && (
+                  <div className="flex justify-between text-slate-500">
+                    <span>Delivery Charge:</span>
+                    {isFreeShipping ? (
+                      <span className="font-semibold text-emerald-600">FREE</span>
+                    ) : selectedZone ? (
+                      <span className="font-semibold text-slate-900">
+                        {selectedZone.name} — Ksh {deliveryFee.toLocaleString()}
+                      </span>
+                    ) : (
+                      <span className="font-semibold text-slate-400">Select zone above</span>
+                    )}
+                  </div>
+                )}
                 <div className="border-t border-slate-200 my-2 pt-3 flex justify-between text-sm">
                   <span className="font-black text-slate-600 uppercase">Total Amount:</span>
                   <span className="font-black text-slate-900 text-base">Ksh {total.toLocaleString()}</span>

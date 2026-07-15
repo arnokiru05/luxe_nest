@@ -39,6 +39,8 @@ export default function ProductPage() {
             price: data.discountedPrice || data.price,
             category: data.category?.name || "General",
             discount: data.discountPercent ? `${data.discountPercent}%` : null,
+            image: data.images?.[0]?.url || "/placeholder.svg",
+            stock: data.stock ?? 0,
           }
           setProduct(productData)
 
@@ -57,6 +59,7 @@ export default function ProductPage() {
                     price: p.discountedPrice || p.price,
                     category: p.category?.name || "General",
                     discount: p.discountPercent ? `${p.discountPercent}%` : null,
+                    image: p.images?.[0]?.url || "/placeholder.svg",
                   }))
                   .slice(0, 4)
               )
@@ -73,6 +76,7 @@ export default function ProductPage() {
   }, [params.id])
 
   const inWish = product ? isInWishlist(product.id) : false
+  const isOutOfStock = product ? product.stock === 0 : false
 
   const toggleWishlist = () => {
     if (product) {
@@ -231,6 +235,12 @@ export default function ProductPage() {
                product.category === "Lighting" ? "/pair" :
                "/piece"}
             </span>
+            {isOutOfStock && (
+              <div className="mt-2 inline-flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm font-semibold px-4 py-2 rounded-lg">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+                This product is currently out of stock
+              </div>
+            )}
           </div>
 
           <div className="mt-6">
@@ -256,10 +266,11 @@ export default function ProductPage() {
             <Button 
               onClick={handleAddToCart} 
               size="lg" 
-              className="flex-1 max-w-[280px] gap-2 bg-slate-950 hover:bg-slate-800 text-white rounded-full font-black uppercase text-xs tracking-wider transition-all shadow-md"
+              disabled={isOutOfStock}
+              className="flex-1 max-w-[280px] gap-2 bg-slate-950 hover:bg-slate-800 text-white rounded-full font-black uppercase text-xs tracking-wider transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ShoppingCart className="h-4.5 w-4.5" />
-              <span>Add to Cart</span>
+              <span>{isOutOfStock ? "Out of Stock" : "Add to Cart"}</span>
             </Button>
             
             <Button

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, useInView, animate, AnimatePresence } from "framer-motion"
+import { Sparkles, ArrowRight } from "lucide-react"
 
 function AnimatedNumber({ value, duration = 2 }) {
   const [displayValue, setDisplayValue] = useState(0)
@@ -39,19 +40,24 @@ export default function HeroSection() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/products")
+    let cancelled = false
+    fetch("/api/products?limit=12&inStock=true")
       .then(res => res.json())
       .then(data => {
+        if (cancelled) return
         const arr = Array.isArray(data) ? data : (data.products || [])
-        const mapped = arr.map(p => ({
-          ...p,
-          originalPrice: p.price,
-          price: p.discountedPrice || p.price
-        }))
+        const mapped = arr
+          .filter(p => p.stock > 0)
+          .map(p => ({
+            ...p,
+            originalPrice: p.price,
+            price: p.discountedPrice || p.price
+          }))
         setProducts(mapped)
       })
       .catch(console.error)
-      .finally(() => setIsLoading(false))
+      .finally(() => { if (!cancelled) setIsLoading(false) })
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
@@ -81,7 +87,7 @@ export default function HeroSection() {
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 overflow-hidden">
       <div
-        className="relative rounded-3xl min-h-[550px] h-auto lg:h-[calc(100vh-130px)] lg:max-h-[650px] flex flex-col lg:flex-row items-center justify-between p-6 sm:p-8 lg:p-10 overflow-hidden border shadow-sm"
+        className="relative rounded-3xl h-[calc(100dvh-120px)] min-h-[500px] max-h-[700px] lg:h-[calc(100vh-130px)] lg:max-h-[650px] flex flex-col lg:flex-row items-center justify-between p-6 sm:p-8 lg:p-10 overflow-hidden border shadow-sm"
         style={{
           background: "linear-gradient(135deg, #FAF7F2 0%, #F5EDD9 60%, #EDE0C8 100%)",
           borderColor: "rgba(191,150,48,0.15)"
@@ -90,13 +96,13 @@ export default function HeroSection() {
         {/* Blended Background Images */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[5%] -left-[5%] w-[50%] h-[60%] blur-[3px] opacity-70 mix-blend-multiply transform rotate-6">
-            <Image src="/bg1.png" alt="Background 1" fill className="object-cover" unoptimized />
+            <Image src="/bg1.png" alt="" fill className="object-cover" />
           </div>
           <div className="absolute top-[15%] right-[5%] w-[45%] h-[60%] blur-[3px] opacity-70 mix-blend-multiply transform -rotate-6">
-            <Image src="/bg2.png" alt="Background 2" fill className="object-cover" unoptimized />
+            <Image src="/bg2.png" alt="" fill className="object-cover" />
           </div>
           <div className="absolute -bottom-[10%] left-[15%] w-[55%] h-[60%] blur-[3px] opacity-70 mix-blend-multiply">
-            <Image src="/bg3.png" alt="Background 3" fill className="object-cover" unoptimized />
+            <Image src="/bg3.png" alt="" fill className="object-cover" />
           </div>
         </div>
 
@@ -113,21 +119,23 @@ export default function HeroSection() {
         <div className="absolute bottom-12 left-12 w-20 h-20 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #BF9630 0%, transparent 70%)" }} />
 
         {/* Left Content Column */}
-        <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-start gap-5 lg:gap-6 pt-10 lg:pt-0">
+        <div className="relative z-20 flex flex-col justify-center items-start w-full lg:w-1/2 h-auto lg:h-full gap-4 lg:gap-6 shrink-0 pt-4 lg:pt-0">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col gap-3 items-start"
+            className="flex flex-col gap-2 sm:gap-3 items-start"
           >
             <div className="swing-emoji drop-shadow-md">
-              <Image src="/logo.png" alt="Luxe Nest Households" width={280} height={140} className="h-20 w-auto md:h-24 object-contain" />
+              <Image src="/logo.png" alt="Luxe Nest Households" width={280} height={140} className="h-16 sm:h-20 w-auto md:h-24 object-contain" />
             </div>
             <div
-              className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-sm w-fit mt-1"
-              style={{ background: "rgba(191,150,48,0.12)", color: "#BF9630" }}
+              className="flex items-center gap-2 mb-2 mt-4 bg-white/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/60 shadow-sm"
             >
-              New Arrival
+              <Sparkles className="w-4 h-4 text-[#BF9630]" />
+              <span className="text-xs font-black tracking-[0.2em] uppercase text-[#BF9630] drop-shadow-sm">
+                New Arrival
+              </span>
             </div>
           </motion.div>
 
@@ -135,7 +143,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-5xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]"
+            className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]"
             style={{ color: "#4A3728" }}
           >
             Elevate <br />
@@ -143,28 +151,28 @@ export default function HeroSection() {
             <span style={{ color: "#BF9630" }}>Aesthetics</span>
           </motion.h1>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-base sm:text-lg max-w-md leading-relaxed"
-            style={{ color: "#7A6255" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            A premium collection of household products designed for those who appreciate the perfect balance of form and function.
-          </motion.p>
+            <p className="max-w-md text-base md:text-lg lg:text-xl font-bold tracking-wide drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)] text-[#2D1A11] leading-relaxed">
+              A premium collection of household products designed for those who appreciate the perfect balance of form and function.
+            </p>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="flex flex-wrap items-center gap-4 mt-2"
+            className="flex flex-wrap items-center gap-3 sm:gap-4 mt-1 sm:mt-2 w-full sm:w-auto"
           >
             <Button
               onClick={() => {
                 if (currentDeal) handleAddToCart(currentDeal)
               }}
               disabled={!currentDeal}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold uppercase tracking-wider rounded-none px-8 h-12 shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold uppercase tracking-wider rounded-none px-6 sm:px-8 h-10 sm:h-12 shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm"
             >
               Buy Now &gt;
             </Button>
@@ -172,7 +180,7 @@ export default function HeroSection() {
               variant="outline"
               asChild={!!currentDeal}
               disabled={!currentDeal}
-              className="bg-transparent font-black uppercase tracking-wider rounded-none px-8 h-12 hover:-translate-y-0.5 hover:bg-[#4A3728] hover:text-white transition-all duration-300"
+              className="bg-transparent font-black uppercase tracking-wider rounded-none px-6 sm:px-8 h-10 sm:h-12 hover:-translate-y-0.5 hover:bg-[#4A3728] hover:text-white transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm"
               style={{ borderColor: "#4A3728", color: "#4A3728", borderWidth: "2px" }}
             >
               {currentDeal ? (
@@ -241,7 +249,17 @@ export default function HeroSection() {
                 >
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#BF9630" }}>Price</p>
-                    <p className="text-xl font-black" style={{ color: "#4A3728" }}>Ksh {Number(currentDeal.price).toLocaleString()}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl font-black" style={{ color: "#4A3728" }}>Ksh {Number(currentDeal.price).toLocaleString()}</p>
+                      {currentDeal.discountPercent > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+                          -{currentDeal.discountPercent}%
+                        </span>
+                      )}
+                    </div>
+                    {currentDeal.discountPercent > 0 && (
+                      <p className="text-xs line-through text-red-400">Ksh {Number(currentDeal.originalPrice).toLocaleString()}</p>
+                    )}
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#BF9630" }}>Color</p>
@@ -262,23 +280,47 @@ export default function HeroSection() {
         </div>
 
         {/* Mobile Right Image */}
-        <div className="relative z-10 w-full flex lg:hidden justify-center items-center mt-12 h-[350px]">
+        <div className="relative z-10 w-full flex-1 flex lg:hidden justify-end items-end pb-2 sm:pb-4 pr-1 sm:pr-2">
           {currentDeal ? (
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentDeal.id}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -50 }}
-                className="relative w-full h-full"
+                initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9, x: -20 }}
+                className="relative w-[85%] sm:w-[70%] max-w-[320px] min-h-[260px] h-[100%] max-h-[340px] bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/70 shadow-2xl flex flex-col p-4 z-20 mt-2"
               >
-                <Image
-                  src={currentDeal.images?.[0]?.url || "/placeholders/filter.jpeg"}
-                  alt={currentDeal.name}
-                  fill
-                  className="object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)] mix-blend-multiply"
-                  priority
-                />
+                {/* Image Container */}
+                <div className="relative w-full flex-1 min-h-[140px]">
+                  <Image
+                    src={currentDeal.images?.[0]?.url || "/placeholders/filter.jpeg"}
+                    alt={currentDeal.name}
+                    fill
+                    className="object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] mix-blend-multiply"
+                    priority
+                  />
+                </div>
+                
+                {/* Product Info Bar */}
+                <div className="w-full flex items-end justify-between gap-2 mt-3 pt-3 border-t border-white/60 shrink-0">
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#BF9630]">Featured</span>
+                    <span className="text-sm font-bold text-[#4A3728] truncate pr-2">{currentDeal.name}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-center gap-1.5">
+                      {currentDeal.discountPercent > 0 && (
+                        <span className="bg-red-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-sm">
+                          -{currentDeal.discountPercent}%
+                        </span>
+                      )}
+                      <span className="text-sm font-black text-[#7A6255] whitespace-nowrap">KES {Number(currentDeal.price).toLocaleString()}</span>
+                    </div>
+                    {currentDeal.discountPercent > 0 && (
+                      <span className="text-[10px] line-through text-red-400 whitespace-nowrap">KES {Number(currentDeal.originalPrice).toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             </AnimatePresence>
           ) : (

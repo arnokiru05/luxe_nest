@@ -28,21 +28,28 @@ export function CartProvider({ children }) {
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id)
+      const availableStock = product.stock ?? Infinity
 
       if (existingItem) {
-        // Update quantity if item already exists
+        const newQuantity = Math.min(existingItem.quantity + quantity, availableStock)
         return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item,
+          item.id === product.id ? { ...item, quantity: newQuantity } : item,
         )
       } else {
-        // Add new item
-        return [...prevItems, { ...product, quantity }]
+        const newQuantity = Math.min(quantity, availableStock)
+        return [...prevItems, { ...product, quantity: newQuantity }]
       }
     })
   }
 
   const updateCartItemQuantity = (productId, quantity) => {
-    setCartItems((prevItems) => prevItems.map((item) => (item.id === productId ? { ...item, quantity } : item)))
+    setCartItems((prevItems) => prevItems.map((item) => {
+      if (item.id === productId) {
+        const availableStock = item.stock ?? Infinity
+        return { ...item, quantity: Math.min(quantity, availableStock) }
+      }
+      return item
+    }))
   }
 
   const removeFromCart = (productId) => {

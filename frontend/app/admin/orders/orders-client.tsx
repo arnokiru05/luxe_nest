@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 export function OrdersClient({ initialOrders }: { initialOrders: any[] }) {
   const [orders, setOrders] = useState(initialOrders);
@@ -112,6 +113,16 @@ export function OrdersClient({ initialOrders }: { initialOrders: any[] }) {
                       View Details
                     </Button>
                   </CollapsibleTrigger>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-5 gap-1.5 text-[#BF9630] border-[#BF9630]/40 hover:bg-[#BF9630]/5"
+                    onClick={() => window.open(`/api/admin/orders/${order.id}/receipt`, "_blank")}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Receipt
+                  </Button>
                 </div>
               </div>
               
@@ -121,6 +132,7 @@ export function OrdersClient({ initialOrders }: { initialOrders: any[] }) {
                     <div>
                       <h4 className="font-medium mb-2">Customer Details</h4>
                       <div className="text-sm space-y-1">
+                        <p><span className="text-muted-foreground">Order ID:</span> <span className="font-mono text-xs font-semibold">{order.id.toUpperCase()}</span></p>
                         <p><span className="text-muted-foreground">Phone:</span> {order.phone}</p>
                         {order.email && <p><span className="text-muted-foreground">Email:</span> {order.email}</p>}
                         <p><span className="text-muted-foreground">Address:</span> {order.address || "N/A"}</p>

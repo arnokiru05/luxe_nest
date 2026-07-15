@@ -4,7 +4,8 @@ import prisma from "@/lib/prisma";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, address, items } = body;
+    const { name, email, phone, address, items, deliveryFee: rawDeliveryFee, shippingZone } = body;
+    const deliveryFee = Number(rawDeliveryFee) || 0;
 
     // Basic validation
     if (!name || !phone || !address || !items || !Array.isArray(items) || items.length === 0) {
@@ -79,7 +80,8 @@ export async function POST(request: NextRequest) {
           address,
           paymentMethod: "MPESA",
           subtotal,
-          total: subtotal,
+          total: subtotal + deliveryFee,
+          notes: shippingZone ? `Delivery Zone: ${shippingZone}` : null,
           status: "PENDING",
           paymentStatus: "UNPAID",
           items: {

@@ -24,10 +24,12 @@ export default function ProductCard({ product, onQuickView }) {
   
   const inWish = isInWishlist(product.id)
   const [isQuickOrderOpen, setIsQuickOrderOpen] = useState(false)
+  const isOutOfStock = product.stock === 0
 
   const handleAddToCart = (e) => {
     e.preventDefault()
     e.stopPropagation()
+    if (isOutOfStock) return
     addToCart(product, 1)
     toast({
       title: "Added to Cart",
@@ -57,8 +59,17 @@ export default function ProductCard({ product, onQuickView }) {
       {/* 1. PRODUCT IMAGE + HOVER ICON ACTIONS */}
       <div className="relative aspect-square w-full bg-[#FAFAF9] flex items-center justify-center p-6 overflow-hidden">
         
+        {/* OUT OF STOCK Badge */}
+        {isOutOfStock && (
+          <div className="absolute inset-0 z-20 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
+            <span className="bg-slate-800 text-white text-[11px] font-black tracking-widest uppercase px-4 py-2 rounded-full shadow-lg">
+              Out of Stock
+            </span>
+          </div>
+        )}
+
         {/* SALE Badge */}
-        {product.discount && (
+        {product.discount && !isOutOfStock && (
           <div className="absolute left-4 top-4 z-10 flex flex-col gap-1">
             <span className="border border-primary text-primary bg-white/90 font-bold text-[10px] tracking-wider px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
               -{product.discount}
@@ -152,9 +163,10 @@ export default function ProductCard({ product, onQuickView }) {
           <Button
             onClick={handleAddToCart}
             size="sm"
-            className="flex-1 bg-primary hover:bg-primary/90 text-white text-[10px] font-bold tracking-wider uppercase rounded-none transition-all shadow-sm flex items-center justify-center"
+            disabled={isOutOfStock}
+            className="flex-1 bg-primary hover:bg-primary/90 text-white text-[10px] font-bold tracking-wider uppercase rounded-none transition-all shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add to Cart
+            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
           </Button>
 
           <Button

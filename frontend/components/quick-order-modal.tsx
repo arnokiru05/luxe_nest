@@ -117,11 +117,11 @@ export default function QuickOrderModal({ product, isOpen, onClose }) {
       })
 
       // 2. Generate WhatsApp redirect message
-      const shortOrderId = data.order.id.slice(-8).toUpperCase()
+      const orderIdDisplay = data.order.id.toUpperCase()
       const whatsappMessage = `Hi Luxe Nest! 🏡\n\n` +
         `I have just placed an order via Quick Buy:\n` +
         `━━━━━━━━━━━━━━━━━━━\n` +
-        `*Order ID:* #${shortOrderId}\n` +
+        `*Order ID:* #${orderIdDisplay}\n` +
         `*Customer Name:* ${formData.name.trim()}\n` +
         `*Phone:* ${formData.phone.trim()}\n` +
         `*Delivery Address:* ${formData.address.trim()}\n` +
@@ -158,7 +158,7 @@ export default function QuickOrderModal({ product, isOpen, onClose }) {
             
             <div className="space-y-1">
               <h2 className="text-xl font-black tracking-tight text-slate-900 uppercase">
-                ORDER #{(orderInfo.id || "").slice(-8).toUpperCase()} CREATED!
+                ORDER #{(orderInfo.id || "").toUpperCase()} CREATED!
               </h2>
               <p className="text-slate-500 text-xs">
                 Your guest order has been securely persisted. Finalize your delivery on WhatsApp now.
@@ -238,6 +238,7 @@ export default function QuickOrderModal({ product, isOpen, onClose }) {
                   size="icon" 
                   className="h-7 w-7 rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100" 
                   onClick={() => handleQuantityChange(1)}
+                  disabled={product.stock !== undefined && quantity >= product.stock}
                 >
                   <Plus className="h-3 w-3" />
                 </Button>
