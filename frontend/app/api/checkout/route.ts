@@ -1,70 +1,114 @@
-// @ts-nocheck
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
-// ─── Mock checkout for frontend demo — no DB required ────────────────────────
-// Generates a realistic-looking order object without touching Prisma/DB.
-
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { name, email, phone, address, items } = body
+    const body = await request.json();
+    const { name, email, phone, address, items } = body;
 
     // Basic validation
-    if (!name || !email || !phone || !address || !items || !Array.isArray(items) || items.length === 0) {
+    if (!name || !phone || !address || !items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { error: "Missing required checkout details or cart is empty." },
         { status: 400 }
-      )
+      );
     }
 
-    // Calculate total
-    const computedTotal = items.reduce(
-      (sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
-      0
-    )
+    const order = await prisma.$transaction(async (tx) => {
+      let subtotal = 0;
+      const orderItemsData: {
+        productId: string;
+        productName: string;
+        unitPrice: number;
+        quantity: number;
+      }[] = [];
 
-    // Generate a mock order ID that looks real
-    const mockOrderId = "demo-" + Math.random().toString(36).substring(2, 10).toUpperCase() + Date.now().toString(36).toUpperCase()
+      for (const item of items) {
+        const product = await tx.product.findUnique({
+          where: { id: item.id },
+        });
 
-    // Build a realistic mock order response
-    const mockOrder = {
-      id: mockOrderId,
-      status: "PENDING",
-      total: computedTotal,
-      shippingAddress: address,
-      customerPhone: phone,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      user: {
-        id: "guest-" + Date.now(),
-        name: name,
-        email: email,
-        phone: phone,
-        address: address,
-        role: "GUEST",
-      },
-      items: items.map((item, i) => ({
-        id: `item-${i}-${Date.now()}`,
-        orderId: mockOrderId,
-        productId: item.id,
-        quantity: Number(item.quantity) || 1,
-        price: Number(item.price) || 0,
-        product: {
-          id: item.id,
-          name: item.name,
-          price: Number(item.price) || 0,
-          category: item.category || "General",
-          description: item.description || "",
+        if (!product) {
+          // Product may have been deleted — use price from cart
+          const unitPrice = Number(item.price) || 0;
+          subtotal += unitPrice * (Number(item.quantity) || 1);
+          orderItemsData.push({
+            productId: item.id,
+            productName: item.name,
+            unitPrice,
+            quantity: Number(item.quantity) || 1,
+          });
+          continue;
+        }
+
+        if (!product.isActive) {
+          throw new Error(`"${product.name}" is no longer available.`);
+        }
+
+        const qty = Number(item.quantity) || 1;
+        if (product.stock < qty) {
+          throw new Error(
+            `Insufficient stock for "${product.name}". Only ${product.stock} left.`
+          );
+        }
+
+        // Decrement stock atomically
+        await tx.product.update({
+          where: { id: product.id },
+          data: { stock: product.stock - qty },
+        });
+
+        // Use live discounted price from DB (not stale cart price)
+        const discountMultiplier = 1 - product.discountPercent / 100;
+        const unitPrice = Number(product.price) * discountMultiplier;
+        subtotal += unitPrice * qty;
+
+        orderItemsData.push({
+          productId: product.id,
+          productName: product.name,
+          unitPrice,
+          quantity: qty,
+        });
+      }
+
+      const newOrder = await tx.order.create({
+        data: {
+          customerName: name,
+          phone,
+          email: email || null,
+          address,
+          paymentMethod: "MPESA",
+          subtotal,
+          total: subtotal,
+          status: "PENDING",
+          paymentStatus: "UNPAID",
+          items: {
+            create: orderItemsData,
+          },
         },
-      })),
-    }
+        include: { items: true },
+      });
 
-    return NextResponse.json({ success: true, order: mockOrder })
-  } catch (error) {
-    console.error("Mock checkout error:", error)
+      return newOrder;
+    });
+
     return NextResponse.json(
-      { error: "An error occurred while creating your order.", details: error.message },
-      { status: 500 }
-    )
+      {
+        success: true,
+        order: {
+          ...order,
+          subtotal: Number(order.subtotal),
+          total: Number(order.total),
+          items: order.items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice) })),
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("Checkout error:", error);
+    return NextResponse.json(
+      { error: error.message || "An error occurred while creating your order." },
+      { status: 400 }
+    );
   }
 }

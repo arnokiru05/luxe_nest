@@ -34,20 +34,30 @@ export default function ProductPage() {
         if (res.ok) {
           const data = await res.json()
           const productData = {
-            ...data.product,
-            category: data.product.category?.name || "General"
+            ...data,
+            originalPrice: data.price,
+            price: data.discountedPrice || data.price,
+            category: data.category?.name || "General",
+            discount: data.discountPercent ? `${data.discountPercent}%` : null,
           }
           setProduct(productData)
 
           // Fetch related products
-          if (data.product.category?.slug) {
-            const relatedRes = await fetch(`/api/products?category=${data.product.category.slug}&limit=5`)
+          if (data.categoryId) {
+            const relatedRes = await fetch(`/api/products?categoryId=${data.categoryId}`)
             if (relatedRes.ok) {
               const relatedData = await relatedRes.json()
+              const fetchedRelated = Array.isArray(relatedData) ? relatedData : (relatedData.products || [])
               setRelatedProducts(
-                relatedData.products
-                  .filter(p => p.id !== data.product.id)
-                  .map(p => ({ ...p, category: p.category?.name || "General" }))
+                fetchedRelated
+                  .filter(p => p.id !== data.id)
+                  .map(p => ({ 
+                    ...p, 
+                    originalPrice: p.price,
+                    price: p.discountedPrice || p.price,
+                    category: p.category?.name || "General",
+                    discount: p.discountPercent ? `${p.discountPercent}%` : null,
+                  }))
                   .slice(0, 4)
               )
             }
@@ -203,10 +213,17 @@ export default function ProductPage() {
             <span className="ml-2 text-sm text-muted-foreground">{product.rating} out of 5</span>
           </div>
 
-          <div className="mt-6 flex items-baseline gap-2">
-            <div className="text-3xl font-bold text-primary">
-              <span className="text-lg font-normal text-muted-foreground">Ksh</span>
-              {" "}{product.price.toLocaleString()}
+          <div className="mt-6 flex flex-col gap-1">
+            <div className="flex items-baseline gap-2">
+              <div className="text-3xl font-bold text-primary">
+                <span className="text-lg font-normal text-muted-foreground">Ksh</span>
+                {" "}{Number(product.price).toLocaleString()}
+              </div>
+              {product.discount && product.originalPrice && (
+                <span className="text-lg text-muted-foreground line-through ml-2">
+                  Ksh {Number(product.originalPrice).toLocaleString()}
+                </span>
+              )}
             </div>
             <span className="text-sm text-muted-foreground">
               {product.category === "Wheels" ? "/set" :

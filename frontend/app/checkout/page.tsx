@@ -40,6 +40,14 @@ export default function CheckoutPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [orderInfo, setOrderInfo] = useState(null)
   const [waLink, setWaLink] = useState("")
+  const [settings, setSettings] = useState<any>(null)
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(res => res.json())
+      .then(data => setSettings(data))
+      .catch(console.error)
+  }, [])
 
   // Redirect if cart is empty and checkout hasn't succeeded yet
   useEffect(() => {
@@ -140,7 +148,8 @@ export default function CheckoutPage() {
         `Please confirm my delivery details. Thank you! 🙏`
 
       // 3. Trigger WhatsApp redirection UI State
-      const generatedWaLink = `https://wa.me/254769567516?text=${encodeURIComponent(whatsappMessage)}`
+      const targetWaNumber = settings?.whatsappNumber || "254769567516"
+      const generatedWaLink = `https://wa.me/${targetWaNumber}?text=${encodeURIComponent(whatsappMessage)}`
       setWaLink(generatedWaLink)
       
       // 4. Clear local cart
@@ -378,7 +387,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500 font-medium">Till Number:</span>
-                    <span className="font-black text-slate-900 text-base">000000</span>
+                    <span className="font-black text-slate-900 text-base">{settings?.mpesaTillNumber || "000000"}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500 font-medium">Store Name:</span>

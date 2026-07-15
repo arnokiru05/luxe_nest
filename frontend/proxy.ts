@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server';
 
 // Paths that require authentication (redirect to login if no token cookie present)
@@ -13,9 +12,10 @@ const publicPrefixes = [
   '/favicon',
   '/icon',
   '/public',
+  '/admin/login'
 ];
 
-export function proxy(request) {
+export function middleware(request: any) {
   const { pathname } = request.nextUrl;
 
   // Always allow public prefixes (API routes handle their own auth)
@@ -27,18 +27,20 @@ export function proxy(request) {
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
 
   if (isProtectedPath) {
-    // Only check if a token cookie EXISTS — actual verification is done server-side
-    const token = request.cookies.get('token')?.value;
+    // Only check if admin_secret cookie EXISTS — actual verification is done server-side
+    const token = request.cookies.get('admin_secret')?.value;
 
     if (!token) {
       const url = new URL('/admin/login', request.url);
-      url.searchParams.set('callbackUrl', encodeURI(request.url));
       return NextResponse.redirect(url);
     }
   }
 
   return NextResponse.next();
 }
+
+// In case this file is used as Next.js middleware under a different name
+export { middleware as proxy };
 
 export const config = {
   matcher: [

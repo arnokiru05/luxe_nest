@@ -1,0 +1,1 @@
+npx neonctl@latest init --agent --data "{\"step\":\"getting-started\",\"hasConnectionString\":true,\"framework\":\"next\",\"orm\":\"prisma\",\"migrationTool\":\"prisma\",\"migrationDir\":\"prisma/migrations\",\"features\":[\"database\"]}"

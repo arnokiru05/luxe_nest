@@ -1,112 +1,107 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  password        String?
-  name            String
-  phone           String?
-  address         String?
-  role            Role      @default(CUSTOMER)
-  resetToken      String?
-  resetTokenExpiry DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  orders          Order[]
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Category {
-  id          String    @id @default(uuid())
-  name        String    @unique
-  description String?
-  image       String?
-  slug        String    @unique
-  products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  products Product[]
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  description String?
-  price       Float
-  image       String?
-  stock       Int      @default(0)
-  inStock     Boolean  @default(true)
-  rating      Float    @default(0)
-  features    String[] @default([])
-  specs       Json?    @default("{}") 
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String         @id @default(cuid())
+  name            String
+  slug            String         @unique
+  description     String?
+  price           Decimal
+  discountPercent Int            @default(0)
+  categoryId      String
+  category        Category       @relation(fields: [categoryId], references: [id])
+  color           String?
+  stock           Int
+  isActive        Boolean        @default(true)
+  images          ProductImage[]
+  orderItems      OrderItem[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   @@index([categoryId])
 }
 
-model Order {
-  id              String      @id @default(uuid())
-  userId          String
-  user            User        @relation(fields: [userId], references: [id])
-  status          OrderStatus @default(PENDING)
-  total           Float
-  shippingAddress String?
-  customerPhone   String?
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  position  Int
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
 
-  @@index([userId])
+model Order {
+  id            String        @id @default(cuid())
+  customerName  String
+  phone         String
+  email         String?
+  address       String?
+  city          String?
+  notes         String?
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(UNPAID)
+  paymentMethod PaymentMethod @default(MPESA)
+  subtotal      Decimal
+  total         Decimal
+  items         OrderItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float
-
-  @@index([orderId])
-  @@index([productId])
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName String
+  unitPrice   Decimal
+  quantity    Int
 }
 
-model Session {
-  id        String   @id @default(uuid())
-  userId    String
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum Role {
-  ADMIN
-  CUSTOMER
-  GUEST
+model StoreSettings {
+  id               String   @id @default("singleton")
+  storeName        String   @default("Luxe Nest Household")
+  paymentMethods   Json     @default("[\"MPESA\"]")
+  paymentNotes     String?
+  mpesaTillNumber  String?
+  whatsappNumber   String?
+  shippingZones    Json     @default("[]")
+  freeShippingOver Decimal?
+  updatedAt        DateTime @updatedAt
 }
 
 enum OrderStatus {
   PENDING
+  CONFIRMED
   PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  MPESA
+  CASH
+  OTHER
 }

@@ -10,6 +10,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'source.unsplash.com',
         pathname: '/**',
       },

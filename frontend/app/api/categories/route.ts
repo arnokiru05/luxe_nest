@@ -1,25 +1,28 @@
-// @ts-nocheck
-import { NextResponse } from "next/server"
-
-// ─── Mock categories for frontend demo ───────────────────────────────────────
-const MOCK_CATEGORIES = [
-  { id: "cat-appliances",  name: "Appliances",  slug: "appliances",  image: null, _count: { products: 4 } },
-  { id: "cat-lighting",    name: "Lighting",    slug: "lighting",    image: null, _count: { products: 3 } },
-  { id: "cat-cutlery",     name: "Cutlery",     slug: "cutlery",     image: null, _count: { products: 2 } },
-  { id: "cat-utensils",    name: "Utensils",    slug: "utensils",    image: null, _count: { products: 3 } },
-  { id: "cat-decor",       name: "Decor",       slug: "decor",       image: null, _count: { products: 4 } },
-  { id: "cat-kitchen",     name: "Kitchen",     slug: "kitchen",     image: null, _count: { products: 5 } },
-  { id: "cat-bedroom",     name: "Bedroom",     slug: "bedroom",     image: null, _count: { products: 3 } },
-  { id: "cat-bathroom",    name: "Bathroom",    slug: "bathroom",    image: null, _count: { products: 2 } },
-  { id: "cat-living-room", name: "Living Room", slug: "living-room", image: null, _count: { products: 2 } },
-  { id: "cat-storage",     name: "Storage",     slug: "storage",     image: null, _count: { products: 2 } },
-]
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { isAuthenticated } from "@/lib/auth";
 
 export async function GET() {
-  return NextResponse.json(
-    { categories: MOCK_CATEGORIES },
-    {
-      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60" },
-    }
-  )
+  const categories = await prisma.category.findMany({
+    include: {
+      _count: { select: { products: true } },
+    },
+    orderBy: { name: "asc" },
+  });
+  return NextResponse.json(categories);
+}
+
+export async function POST(request: NextRequest) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  try {
+    const { name, slug } = await request.json();
+    const category = await prisma.category.create({
+      data: { name, slug },
+    });
+    return NextResponse.json(category, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 }

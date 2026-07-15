@@ -8,43 +8,6 @@ import ProductCard from "@/components/product-card"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ArrowLeft, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 
-const FALLBACK_PRODUCTS = [
-  {
-    id: "pro-blender",
-    name: "High-Speed Pro Blender",
-    price: 25000,
-    discount: "20%",
-    image: "/featured/blender.png",
-    category: "Appliances",
-    description: "Premium professional blender for the modern kitchen.",
-  },
-  {
-    id: "modern-lamp",
-    name: "Modern Kitchen Pendant",
-    price: 12400,
-    image: "/featured/lamp.png",
-    category: "Lighting",
-    description: "Sleek pendant lamp for warm ambient kitchen lighting.",
-  },
-  {
-    id: "cutlery-set",
-    name: "Premium Cutlery Set",
-    price: 8500,
-    image: "/featured/cutlery.png",
-    category: "Cutlery",
-    description: "Elegant stainless steel cutlery set for everyday dining.",
-  },
-  {
-    id: "stand-mixer",
-    name: "Premium Stand Mixer",
-    price: 45000,
-    discount: "18%",
-    image: "/featured/blender.png",
-    category: "Appliances",
-    description: "Luxurious stand mixer, the centerpiece for baking enthusiasts.",
-  },
-]
-
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -59,14 +22,24 @@ export default function FeaturedProducts() {
   useEffect(() => {
     async function fetchFeatured() {
       try {
-        const res = await fetch("/api/products?featured=true&limit=4")
+        const res = await fetch("/api/products")
         if (!res.ok) throw new Error("Failed to fetch featured products")
         const data = await res.json()
-        const fetched = data.products || []
-        setProducts(fetched.length > 0 ? fetched : FALLBACK_PRODUCTS)
+        const fetched = Array.isArray(data) ? data : (data.products || [])
+        
+        const formatted = fetched.slice(0, 8).map(p => ({
+          ...p,
+          originalPrice: p.price,
+          price: p.discountedPrice || p.price,
+          image: p.images?.[0]?.url || null,
+          category: p.category?.name || "General",
+          discount: p.discountPercent ? `${p.discountPercent}%` : null,
+          inStock: p.stock > 0
+        }))
+        setProducts(formatted)
       } catch (err) {
         console.error("Error loading featured products:", err)
-        setProducts(FALLBACK_PRODUCTS)
+        setProducts([])
       } finally {
         setLoading(false)
       }
@@ -152,6 +125,12 @@ export default function FeaturedProducts() {
             <Loader2 className="h-7 w-7 animate-spin text-primary/50" />
             <p className="text-xs" style={{ color: "#BF9630" }}>Loading products...</p>
           </div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[300px] border border-dashed border-[#BF9630]/30 rounded-2xl bg-[#FAFAF9]/50">
+          <span className="text-4xl mb-4 opacity-50">✨</span>
+          <h3 className="text-lg font-bold" style={{ color: "#4A3728" }}>More products coming soon</h3>
+          <p className="text-sm mt-1" style={{ color: "#7A6255" }}>We are currently updating our featured collection.</p>
         </div>
       ) : (
         <>

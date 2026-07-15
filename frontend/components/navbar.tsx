@@ -135,7 +135,7 @@ export default function Navbar() {
 
         {/* TIER 2: Main Header */}
         <header className="border-b border-slate-100">
-          <div className="mx-auto flex max-w-7xl items-center px-4 md:px-6 lg:px-8 h-24 md:h-36 gap-3 lg:gap-6">
+          <div className="mx-auto flex max-w-7xl items-center px-4 md:px-6 lg:px-8 h-20 md:h-24 gap-3 lg:gap-6">
 
             {/* Mobile hamburger */}
             <button
@@ -148,7 +148,7 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <Image src="/logo.png" alt="Luxe Nest Households Logo" width={320} height={160} className="h-20 w-auto md:h-32 object-contain transform origin-left md:scale-110" priority />
+              <Image src="/logo.png" alt="Luxe Nest Households Logo" width={320} height={160} className="h-16 w-auto md:h-20 object-contain transform origin-left hover:scale-105 transition-transform" priority />
             </Link>
 
             {/* Search Bar */}

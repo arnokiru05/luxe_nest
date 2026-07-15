@@ -131,10 +131,17 @@ export default function ProductCard({ product, onQuickView }) {
 
 
           {/* Pricing details */}
-          <div className="flex items-center pt-1">
-            <span className="text-slate-900 font-black text-sm">
-              KES {product.price.toLocaleString()}
-            </span>
+          <div className="flex flex-col items-start pt-1">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-900 font-black text-sm">
+                KES {Number(product.price).toLocaleString()}
+              </span>
+              {product.discount && product.originalPrice && (
+                <span className="text-slate-400 text-xs line-through font-medium">
+                  KES {Number(product.originalPrice).toLocaleString()}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </Link>

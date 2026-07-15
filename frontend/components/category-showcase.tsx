@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   X,
   Star,
+  Loader2,
 } from "lucide-react"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
@@ -24,96 +25,7 @@ const WhatsAppIcon = ({ className }) => (
   </svg>
 )
 
-const CATEGORIES = [
-  { name: "All Products", value: "all" },
-  { name: "Appliances", value: "Appliances" },
-  { name: "Lighting", value: "Lighting" },
-  { name: "Cutlery", value: "Cutlery" },
-  { name: "Utensils", value: "Utensils" },
-  { name: "Decor", value: "Decor" },
-]
-
-const PRODUCTS = [
-  {
-    id: "pro-blender",
-    name: "High-Speed Pro Blender",
-    price: 25000,
-    originalPrice: 32000,
-    discount: "20%",
-    image: "/featured/blender.png",
-    category: "Appliances",
-    description: "Premium professional blender designed for ultimate performance and luxury in your kitchen.",
-  },
-  {
-    id: "modern-lamp",
-    name: "Modern Kitchen Pendant",
-    price: 12400,
-    originalPrice: 14200,
-    discount: "15%",
-    image: "/featured/lamp.png",
-    category: "Lighting",
-    description: "Sleek and modern pendant lamp providing warm, ambient lighting for dining and kitchen islands.",
-  },
-  {
-    id: "cutlery-set",
-    name: "Premium Cutlery Set",
-    price: 8500,
-    originalPrice: 9800,
-    discount: "15%",
-    image: "/featured/cutlery.png",
-    category: "Cutlery",
-    description: "Sturdy and beautifully crafted cutlery set, providing a timeless foundation for everyday dining.",
-  },
-  {
-    id: "stand-mixer",
-    name: "Premium Stand Mixer",
-    price: 45000,
-    originalPrice: 55000,
-    discount: "18%",
-    image: "/featured/blender.png",
-    category: "Appliances",
-    description: "Luxurious stand mixer that serves as the perfect centerpiece for baking enthusiasts.",
-  },
-  {
-    id: "ceramic-bowl-set",
-    name: "Ceramic Bowl Set",
-    price: 6200,
-    originalPrice: 7500,
-    discount: "17%",
-    image: "/featured/cutlery.png",
-    category: "Utensils",
-    description: "Handcrafted ceramic bowl set in earthy, warm tones. Perfect for everyday use.",
-  },
-  {
-    id: "bamboo-tray",
-    name: "Bamboo Serving Tray",
-    price: 3800,
-    image: "/featured/cutlery.png",
-    category: "Utensils",
-    description: "Eco-friendly bamboo tray, elegant and versatile for serving or displaying.",
-  },
-]
-
-// ── Promo banner data for the sidebar deal cards
-const DEALS = [
-  {
-    id: "deal-blender",
-    tag: "GET 50% OFF",
-    name: "Wicker Hanging Lamp",
-    price: 9500,
-    image: "/featured/lamp.png",
-    category: "Lighting",
-  },
-  {
-    id: "deal-mixer",
-    tag: "GET 15% OFF",
-    name: "Brass-legged Stand",
-    price: 28000,
-    image: "/featured/blender.png",
-    category: "Appliances",
-  },
-]
-
+// Promos will be dynamically generated from products with discounts.
 export default function CategoryShowcase() {
   const { addToCart } = useCart()
   const { toast } = useToast()
@@ -126,9 +38,56 @@ export default function CategoryShowcase() {
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(true)
 
+  // API State
+  const [categories, setCategories] = useState([{ name: "All Products", value: "all" }])
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [catRes, prodRes] = await Promise.all([
+          fetch("/api/categories"),
+          fetch("/api/products")
+        ])
+        
+        if (catRes.ok) {
+          const catData = await catRes.json()
+          setCategories([
+            { name: "All Products", value: "all" },
+            ...(catData || []).map(c => ({ name: c.name, value: c.name }))
+          ])
+        }
+
+        if (prodRes.ok) {
+          const prodData = await prodRes.json()
+          const fetched = Array.isArray(prodData) ? prodData : (prodData.products || [])
+          
+          const formatted = fetched.map(p => ({
+            ...p,
+            originalPrice: p.price,
+            price: p.discountedPrice || p.price,
+            image: p.images?.[0]?.url || null,
+            category: p.category?.name || "General",
+            discount: p.discountPercent ? `${p.discountPercent}%` : null,
+            inStock: p.stock > 0
+          }))
+          setProducts(formatted)
+        }
+      } catch (e) {
+        console.error("Failed to load showcase data", e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
   const filteredProducts = activeTab === "all"
-    ? PRODUCTS
-    : PRODUCTS.filter((p) => p.category === activeTab)
+    ? products
+    : products.filter((p) => p.category === activeTab)
+
+  const deals = products.filter(p => p.discount).slice(0, 2)
 
   const checkScroll = () => {
     if (scrollRef.current) {
@@ -182,34 +141,38 @@ export default function CategoryShowcase() {
     <section className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-10">
 
       {/* Deal Banners Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-14">
-        {DEALS.map((deal, i) => (
-          <motion.div
-            key={deal.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.15 }}
-            className="relative flex items-center justify-between rounded-2xl overflow-hidden px-8 py-6 group hover:shadow-md transition-all"
-            style={{ background: "linear-gradient(135deg, #FAF6EE 0%, #F2E8D5 100%)", border: "1px solid rgba(191,150,48,0.15)" }}
-          >
-            <div className="z-10">
-              <span className="text-[10px] font-black uppercase tracking-widest block mb-1" style={{ color: "#BF9630" }}>{deal.tag}</span>
-              <h3 className="text-xl font-black leading-tight mb-3" style={{ color: "#4A3728" }}>{deal.name}</h3>
-              <Button
-                asChild
-                className="text-white font-bold text-[11px] uppercase tracking-wider rounded-none px-5 h-9"
-                style={{ background: "#BF9630" }}
-              >
-                <Link href={`/shop/product/${deal.id}`}>Buy Now &gt;</Link>
-              </Button>
-            </div>
-            <div className="relative h-32 w-32 md:h-40 md:w-40 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
-              <Image src={deal.image} alt={deal.name} fill className="object-contain mix-blend-multiply drop-shadow-lg" />
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {deals.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-14">
+          {deals.map((deal, i) => (
+            <motion.div
+              key={deal.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.15 }}
+              className="relative flex items-center justify-between rounded-2xl overflow-hidden px-8 py-6 group hover:shadow-md transition-all h-full"
+              style={{ background: "linear-gradient(135deg, #FAF6EE 0%, #F2E8D5 100%)", border: "1px solid rgba(191,150,48,0.15)" }}
+            >
+              <div className="z-10 flex-1 pr-4">
+                <span className="text-[10px] font-black uppercase tracking-widest block mb-1" style={{ color: "#BF9630" }}>
+                  GET {deal.discount} OFF
+                </span>
+                <h3 className="text-xl font-black leading-tight mb-3 line-clamp-2" style={{ color: "#4A3728" }}>{deal.name}</h3>
+                <Button
+                  asChild
+                  className="text-white font-bold text-[11px] uppercase tracking-wider rounded-none px-5 h-9"
+                  style={{ background: "#BF9630" }}
+                >
+                  <Link href={`/shop/product/${deal.id}`}>Buy Now &gt;</Link>
+                </Button>
+              </div>
+              <div className="relative h-32 w-32 md:h-40 md:w-40 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
+                <Image src={deal.image || "/placeholders/filter.jpeg"} alt={deal.name} fill className="object-contain mix-blend-multiply drop-shadow-lg" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* ─── Popular Categories Header ─── */}
           <div className="mb-8 flex flex-col items-start justify-between gap-4 pb-6 md:flex-row md:items-center" style={{ borderBottom: "1px solid rgba(191,150,48,0.18)" }}>
@@ -220,7 +183,7 @@ export default function CategoryShowcase() {
 
         {/* Category Tabs */}
         <div className="flex flex-wrap gap-1.5 p-1.5 rounded-full max-w-full overflow-x-auto" style={{ background: "#F5EDD9", border: "1px solid rgba(191,150,48,0.2)" }}>
-          {CATEGORIES.map((tab) => {
+          {categories.map((tab) => {
             const isActive = activeTab === tab.value
             return (
               <button
@@ -251,47 +214,69 @@ export default function CategoryShowcase() {
       </div>
 
       {/* ─── Scrollable Product Carousel ─── */}
-      <div className="relative group/carousel">
-        {showLeftArrow && (
-          <button
-            onClick={() => handleArrowScroll("left")}
-            className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-slate-200 text-slate-700 shadow-lg flex items-center justify-center transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:bg-primary hover:text-white hover:border-primary"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-        )}
-        {showRightArrow && (
-          <button
-            onClick={() => handleArrowScroll("right")}
-            className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-slate-200 text-slate-700 shadow-lg flex items-center justify-center transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:bg-primary hover:text-white hover:border-primary"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        )}
-
-        <div
-          ref={scrollRef}
-          className="w-full flex items-stretch gap-5 overflow-x-hidden pb-4"
-          onScroll={checkScroll}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex items-stretch gap-5"
-            >
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="w-[260px] sm:w-[290px] shrink-0">
-                  <ProductCard product={product} onQuickView={setSelectedProduct} />
-                </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+      {loading ? (
+        <div className="flex items-center justify-center h-[340px]">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-7 w-7 animate-spin text-primary/50" />
+            <p className="text-xs" style={{ color: "#BF9630" }}>Loading products...</p>
+          </div>
         </div>
-      </div>
+      ) : products.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[300px] border border-dashed border-[#BF9630]/30 rounded-2xl bg-[#FAFAF9]/50">
+          <span className="text-4xl mb-4 opacity-50">✨</span>
+          <h3 className="text-lg font-bold" style={{ color: "#4A3728" }}>More products coming soon</h3>
+          <p className="text-sm mt-1" style={{ color: "#7A6255" }}>We are currently updating our collection.</p>
+        </div>
+      ) : (
+        <div className="relative group/carousel">
+          {showLeftArrow && (
+            <button
+              onClick={() => handleArrowScroll("left")}
+              className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-slate-200 text-slate-700 shadow-lg flex items-center justify-center transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:bg-primary hover:text-white hover:border-primary"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
+          {showRightArrow && (
+            <button
+              onClick={() => handleArrowScroll("right")}
+              className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border border-slate-200 text-slate-700 shadow-lg flex items-center justify-center transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 hover:bg-primary hover:text-white hover:border-primary"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          )}
+
+          <div
+            ref={scrollRef}
+            className="w-full flex items-stretch gap-5 overflow-x-auto pb-4 scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            onScroll={checkScroll}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex items-stretch gap-5 min-w-min"
+              >
+                {filteredProducts.length === 0 ? (
+                  <div className="w-full min-w-[260px] flex items-center justify-center py-20 text-slate-400 text-sm">
+                    No products in this category yet.
+                  </div>
+                ) : (
+                  filteredProducts.map((product) => (
+                    <div key={product.id} className="w-[260px] sm:w-[290px] shrink-0">
+                      <ProductCard product={product} onQuickView={setSelectedProduct} />
+                    </div>
+                  ))
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       {/* ─── Quick View Modal ─── */}
       <AnimatePresence>

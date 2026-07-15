@@ -5,35 +5,46 @@
 @layer base {
   :root {
     /* ── Warm, earthy, woody palette inspired by Luxe Nest logo ── */
-    --background: 38 33% 97%;       /* #FAF7F2 Warm cream white */
-    --foreground: 24 30% 20%;       /* #4A3728 Deep warm brown text */
+    --background: 38 33% 97%;
+    /* #FAF7F2 Warm cream white */
+    --foreground: 24 30% 20%;
+    /* #4A3728 Deep warm brown text */
 
-    --card: 38 40% 98%;             /* #FDFAF5 Very light cream */
-    --card-foreground: 24 30% 20%;  /* Deep warm brown */
+    --card: 38 40% 98%;
+    /* #FDFAF5 Very light cream */
+    --card-foreground: 24 30% 20%;
+    /* Deep warm brown */
 
     --popover: 38 40% 98%;
     --popover-foreground: 24 30% 20%;
 
     /* Primary: warm gold from the logo lettering */
-    --primary: 42 65% 45%;          /* #BF9630 Warm Gold */
+    --primary: 42 65% 45%;
+    /* #BF9630 Warm Gold */
     --primary-foreground: 0 0% 100%;
 
     /* Secondary: sage green from the botanical leaves */
-    --secondary: 115 20% 68%;       /* #8FAF7E Sage Green */
+    --secondary: 115 20% 68%;
+    /* #8FAF7E Sage Green */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 38 25% 94%;            /* #F3EDE3 Warm muted */
-    --muted-foreground: 24 15% 50%; /* Muted warm brown */
+    --muted: 38 25% 94%;
+    /* #F3EDE3 Warm muted */
+    --muted-foreground: 24 15% 50%;
+    /* Muted warm brown */
 
-    --accent: 24 45% 55%;           /* #C4825A Warm terracotta/copper */
+    --accent: 24 45% 55%;
+    /* #C4825A Warm terracotta/copper */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 38 33% 97%;
 
-    --border: 38 20% 88%;           /* Warm sandy border */
+    --border: 38 20% 88%;
+    /* Warm sandy border */
     --input: 38 20% 88%;
-    --ring: 42 65% 45%;             /* Gold ring */
+    --ring: 42 65% 45%;
+    /* Gold ring */
 
     --radius: 0.75rem;
 
@@ -112,13 +123,27 @@ html {
 
 /* ── Swinging home kaomoji animation ── */
 @keyframes swing {
-  0%, 100% { transform: rotate(-12deg); }
-  50%       { transform: rotate(12deg); }
+
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+
+  50% {
+    transform: rotate(12deg);
+  }
 }
 
 @keyframes float-gentle {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .swing-emoji {
@@ -136,6 +161,7 @@ html {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 .carousel-scroll::-webkit-scrollbar {
   display: none;
 }

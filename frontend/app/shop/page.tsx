@@ -28,155 +28,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import ProductCard from "@/components/product-card"
 import Pagination from "@/components/pagination"
 
-/* ─────────────────────────────────────────────────────────────────
-   PLACEHOLDER PRODUCTS — shown while API loads or if API fails
-   ───────────────────────────────────────────────────────────────── */
-const PLACEHOLDER_PRODUCTS = [
-  {
-    id: "ph-1",
-    name: "Bamboo Cutting Board Set",
-    price: 3500,
-    image: "/featured/blender.png",
-    category: "Kitchen",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-2",
-    name: "Ceramic Pour-Over Coffee Set",
-    price: 7800,
-    image: "/featured/blender.png",
-    category: "Kitchen",
-    inStock: true,
-    discount: "10%",
-  },
-  {
-    id: "ph-3",
-    name: "Linen Throw Blanket",
-    price: 5500,
-    image: "/featured/blender.png",
-    category: "Bedroom",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-4",
-    name: "Premium Wall Clock",
-    price: 4200,
-    image: "/featured/blender.png",
-    category: "Living Room",
-    inStock: false,
-    discount: null,
-  },
-  {
-    id: "ph-5",
-    name: "Rattan Storage Basket",
-    price: 2900,
-    image: "/featured/blender.png",
-    category: "Storage",
-    inStock: true,
-    discount: "15%",
-  },
-  {
-    id: "ph-6",
-    name: "Marble Soap Dispenser",
-    price: 1800,
-    image: "/featured/blender.png",
-    category: "Bathroom",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-7",
-    name: "Linen Duvet Cover",
-    price: 12500,
-    image: "/featured/blender.png",
-    category: "Bedroom",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-8",
-    name: "Cast Iron Skillet",
-    price: 8900,
-    image: "/featured/blender.png",
-    category: "Kitchen",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-9",
-    name: "Scented Soy Candle",
-    price: 1500,
-    image: "/featured/blender.png",
-    category: "Living Room",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-10",
-    name: "Wooden Spice Rack",
-    price: 3200,
-    image: "/featured/blender.png",
-    category: "Kitchen",
-    inStock: false,
-    discount: null,
-  },
-  {
-    id: "ph-11",
-    name: "Velvet Accent Chair",
-    price: 45000,
-    image: "/featured/blender.png",
-    category: "Living Room",
-    inStock: true,
-    discount: "5%",
-  },
-  {
-    id: "ph-12",
-    name: "Bathroom Bamboo Organizer",
-    price: 2100,
-    image: "/featured/blender.png",
-    category: "Bathroom",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-13",
-    name: "Neutral Throw Pillow Set",
-    price: 4800,
-    image: "/featured/blender.png",
-    category: "Bedroom",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-14",
-    name: "Wicker Laundry Basket",
-    price: 5600,
-    image: "/featured/blender.png",
-    category: "Storage",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-15",
-    name: "Stainless Steel Kettle",
-    price: 6200,
-    image: "/featured/blender.png",
-    category: "Kitchen",
-    inStock: true,
-    discount: null,
-  },
-  {
-    id: "ph-16",
-    name: "Linen Hand Towels (4-Pack)",
-    price: 2400,
-    image: "/featured/blender.png",
-    category: "Bathroom",
-    inStock: true,
-    discount: "20%",
-  },
-]
+/* PLACEHOLDER PRODUCTS REMOVED - USING API EXCLUSIVELY */
 
 const PRICE_RANGES = [
   { label: "Under KES 2,000", value: "0-2000" },
@@ -484,7 +336,7 @@ function ShopPageContent() {
         const res = await fetch("/api/products?limit=200")
         if (!res.ok) throw new Error("API error")
         const data = await res.json()
-        if (!cancelled) setApiProducts(data.products || [])
+        if (!cancelled) setApiProducts(Array.isArray(data) ? data : (data.products || []))
       } catch {
         if (!cancelled) setApiFailed(true)
       } finally {
@@ -495,21 +347,21 @@ function ShopPageContent() {
     return () => { cancelled = true }
   }, [])
 
-  /* ── Merged product list: API results first; fallback to placeholders ── */
+  /* ── Merged product list: API results only ── */
   const sourceProducts = useMemo(() => {
     if (apiLoading) return []
-    if (apiProducts.length > 0) {
-      return apiProducts.map((p) => ({
-        ...p,
-        category:
-          typeof p.category === "string"
-            ? p.category
-            : p.category?.name || "General",
-        inStock: p.inStock !== false,
-      }))
-    }
-    // Show placeholders when API returns nothing or fails
-    return PLACEHOLDER_PRODUCTS
+    return apiProducts.map((p) => ({
+      ...p,
+      originalPrice: p.price,
+      price: p.discountedPrice || p.price,
+      image: p.images?.[0]?.url || null,
+      category:
+        typeof p.category === "string"
+          ? p.category
+          : p.category?.name || "General",
+      inStock: p.stock > 0,
+      discount: p.discountPercent ? `${p.discountPercent}%` : null,
+    }))
   }, [apiLoading, apiProducts])
 
   /* ── Unique categories derived from sourceProducts ── */
